@@ -1,10 +1,10 @@
 ;;; openai.el --- Integrate with the OpenAI API -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2015 Free Software Foundation, Inc.
+;; Copyright (C) 2023 Free Software Foundation, Inc.
 
 ;; Author: Anton Hibl <antonhibl11@gmail.com>
 ;; URL: https://github.com/antonhibl/openai
-;; Keywords: artificial-intelligence
+;; Keywords: AI
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "28.2"))
 
@@ -26,7 +26,7 @@
 ;; This is intended to allow for development and programming queries into the
 ;; OpenAI API.  This allows for sending queries stright from Emacs directly into
 ;; various models of OpenAI's platform.
-;;
+
 ;; See the accompanying Readme.org for configuration details.
 
 ;;; Code:
@@ -42,7 +42,7 @@
 
 ;; default values for local variables
 (defvar openai-base-url "https://api.openai.com/v1/completions")
-(defvar openai-model "")
+(defvar openai-model nil)
 (defvar openai-api-key nil)
 
 ;; parse prompt into a request for the openai API
@@ -129,7 +129,7 @@ Optional argument BUFFER-NAME buffer to prompt from."
 
 ;; list all currently available models from the list of current models at OpenAI
 (defun openai-list-models ()
-  "Retrieves a lsit of currently available GPT-3 models from OpenAIf."
+  "Retrieves a lsit of currently available GPT-3 models from OpenAI."
   (let ((url "https://api.openai.com/v1/models"))
     (get-buffer-create "*openai*")
     (with-current-buffer (get-buffer-create "*openai*")
@@ -145,4 +145,3 @@ Optional argument BUFFER-NAME buffer to prompt from."
 
 (provide 'openai)
 ;;; openai.el ends here
-;; End:
