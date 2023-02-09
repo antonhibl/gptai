@@ -1,12 +1,12 @@
-;;; OpenAI.el --- Integrate with the OpenAI API -*- lexical-binding: t; -*-
+;;; openai.el --- Integrate with the OpenAI API -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015 Free Software Foundation, Inc.
 
 ;; Author: Anton Hibl <antonhibl11@gmail.com>
-;; URL: https://github.com/antonhibl/OpenAI.el
-;; Keywords: convenience, AI, API
+;; URL: https://github.com/antonhibl/openai
+;; Keywords: convenience, AI, API, openAI
 ;; Version: 1.0.0
-;; Package-Requires: ((emacs "28.2")(json "1.5"))
+;; Package-Requires: ((emacs "28.2"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 ;;; Commentary:
 
 ;; This is intended to allow for development and programming queries into the
-;; OpenAI API. This allows for sending queries stright from emacs directly into
+;; OpenAI API.  This allows for sending queries stright from Emacs directly into
 ;; various models of OpenAI's platform.
 ;;
 ;; See the accompanying Readme.org for configuration details.
@@ -42,7 +42,8 @@
 
 ;; parse prompt into a request for the openai API
 (defun openai-request (openai-prompt)
-  "Sends a request to OpenAI API and returns the response."
+  "Sends a request to OpenAI API and return the response.
+Argument OPENAI-PROMPT prompt."
   (when (null openai-api-key)
     (error "OpenAI API key is not set"))
   (let* ((url-request-method "POST")
@@ -68,7 +69,8 @@
 
 ;; standard way to send a query, interactively prompts user in emacs
 (defun openai-send-query (openai-prompt)
-  "Sends a query to OpenAI API and displays the response in a new buffer."
+  "Sends a query to OpenAI API and displays the response in a new buffer.
+Argument OPENAI-PROMPT prompt."
   (interactive
    (list (read-string "Query: ")))
   (with-current-buffer (get-buffer-create "*openai*")
@@ -84,8 +86,7 @@
 
 ;; send selection text as prompt
 (defun openai-send-query-from-selection ()
-  "Sends query to OpenAI API using selected text as prompt, display response in
-a new buffer"
+  "Sends query to OpenAI API using selected text as prompt."
   (interactive)
   (let ((openai-prompt (if (use-region-p)
                     (buffer-substring-no-properties (region-beginning) (region-end))
@@ -103,7 +104,8 @@ a new buffer"
 
 ;; send buffer's text as prompts
 (defun openai-send-query-from-buffer (&optional buffer-name)
-  "Sends a query to OpenAI API and displays the response in a new buffer."
+  "Sends a query to OpenAI API and displays the response in a new buffer.
+Optional argument BUFFER-NAME buffer to prompt from."
   (interactive
    (list (read-buffer "Buffer: " (current-buffer))))
   (let ((openai-prompt (with-current-buffer buffer-name
@@ -122,6 +124,7 @@ a new buffer"
 
 ;; list all currently available models from the list of current models at OpenAI
 (defun openai-list-models ()
+  "Retrieves a lsit of currently available GPT-3 models from OpenAIf."
   (let ((url "https://api.openai.com/v1/models"))
     (get-buffer-create "*openai*")
     (with-current-buffer (get-buffer-create "*openai*")
@@ -136,5 +139,5 @@ a new buffer"
     (switch-to-buffer-other-window "*openai*")))
 
 (provide 'openai)
-;;; OpenAI.el ends here
+;;; openai.el ends here
 ;; End:
