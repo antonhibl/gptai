@@ -1,0 +1,29 @@
+#+TITLE: OpenAI.el
+#+AUTHOR: Anton Hibl
+
+* Open AI API for Emacs
+
+This allows for easy communication between emacs and the openAI API
+platform; allows using all of the available models and integrates cleanly with
+emacs toolings. Here is the basic things you will need for set-up:
+
+- Load the package file ( this is not in ELPA or MELPA yet so must be installed
+  manually unfortunately).
+- Define the desired model to use (available models can be found by running
+  ~openai-list-models~ which will populate the ~openai-models~ variable with the
+  list of all available models, it will also display this list in the *openai*
+  buffer).
+- Define your API key (your own key can be obtained from [[https://platform.openai.com/account/api-keys][OpenAI API Keys]])
+- Optionally define a keybinding for sending queries
+
+these are all shown below:
+
+#+begin_src emacs-lisp
+  ;; load the package file
+  (load-file "/path/to/OpenAI.el")
+  (defvar openai-model "<MODEL-HERE>")
+  (setq openai-api-key "<API-KEY-HERE>")
+  (global-set-key (kbd "C-c o") 'openai-send-query)
+#+end_src
+
+Feel free to make a PR with improvements.
