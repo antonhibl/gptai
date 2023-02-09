@@ -32,8 +32,8 @@
 ;;; Code:
 
 ;;; Customization
-(defgroup vhdl-ext nil
-  "VHDL Extensions."
+(defgroup openai nil
+  "OpenAI API."
   :group 'emacs)
 
 ;; dependencies
