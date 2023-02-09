@@ -31,6 +31,11 @@
 
 ;;; Code:
 
+;;; Customization
+(defgroup vhdl-ext nil
+  "VHDL Extensions."
+  :group 'emacs)
+
 ;; dependencies
 (require 'url)
 (require 'json)
