@@ -4,8 +4,8 @@
 
 ;; Author: Anton Hibl <antonhibl11@gmail.com>
 ;; URL: https://github.com/antonhibl/openai
-;; Keywords: convenience, AI, API, openAI
-;; Version: 1.0.0
+;; Keywords: artificial-intelligence
+;; Version: 0.1.0
 ;; Package-Requires: ((emacs "28.2"))
 
 ;; This program is free software; you can redistribute it and/or modify
