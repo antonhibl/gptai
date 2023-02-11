@@ -7,8 +7,8 @@ This allows for easy communication between emacs and the openAI API
 platform; allows using all of the available models and integrates cleanly with
 emacs toolings. Here is the basic things you will need for set-up:
 
-- Load the package file ( this is not in ELPA or MELPA yet so must be installed
-  manually unfortunately).
+- Load the package file manually (Moving onto MELPA soon, will be automated
+  then).
 - Define the desired model to use (available models can be found by running
   ~openai-list-models~ which will populate the ~openai-models~ variable with the
   list of all available models, it will also display this list in the *openai*
@@ -20,10 +20,49 @@ these are all shown below:
 
 #+begin_src emacs-lisp
   ;; load the package file
-  (load-file "/path/to/OpenAI.el")
-  (setq openai-model "<MODEL-HERE>")
+  (load-file "/path/to/OpenAI.el") ;; load the package manually
+  (setq openai-model "<MODEL-HERE>") ;; this is only relevant for text models
   (setq openai-api-key "<API-KEY-HERE>")
   (global-set-key (kbd "C-c o") 'openai-send-query)
 #+end_src
+
+** Text Querying
+
+You can send textual queries to different models of openAI using the
+functions:
+
+- ~openai-send-query~
+
+  Prompts in the minibuffer a query and returns the output into the
+  *openai* buffer.
+  
+- ~openai-send-query-from-selection~
+
+  Sends the text in the current selection to openai as the prompt to the openAI
+  API model you specified in your configurations, returns the output into the
+  *openai* buffer. 
+
+- ~openai-send-query-from-buffer~
+
+  Sends the current buffer as the prompt to the openAI API model you specified
+  in your configurations, returns the output into the *openai* buffer.
+
+** Image Querying
+
+You can generate images with the DALL-E engine using:
+
+- ~openai-send-image-query~
+
+  Prompts the user in the minibuffer for
+
+  - A prompt for the command
+  - How many images you want to generate
+  - What size they should be
+  - Where you want to store them on the disk
+
+  It will then generate those images at the API endpoint, then use curl to
+  download those images to your specified directory path.
+
+** Contributing
 
 Feel free to make a PR with improvements.

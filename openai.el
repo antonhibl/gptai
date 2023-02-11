@@ -181,6 +181,7 @@ Optional argument BUFFER-NAME buffer to prompt from."
 ;; list all currently available models from the list of current models at OpenAI
 (defun openai-list-models ()
   "Retrieves a lsit of currently available GPT-3 models from OpenAI."
+  (interactive)
   (let ((url "https://api.openai.com/v1/models"))
     (get-buffer-create "*openai*")
     (with-current-buffer (get-buffer-create "*openai*")
