@@ -21,7 +21,7 @@ these are all shown below:
 #+begin_src emacs-lisp
   ;; load the package file
   (load-file "/path/to/OpenAI.el")
-  (defvar openai-model "<MODEL-HERE>")
+  (setq openai-model "<MODEL-HERE>")
   (setq openai-api-key "<API-KEY-HERE>")
   (global-set-key (kbd "C-c o") 'openai-send-query)
 #+end_src
