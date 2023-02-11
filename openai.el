@@ -178,26 +178,18 @@ Argument OPENAI-PROMPT prompt."
                     (error-message-string err))))))
 
 ;; list all currently available models from the list of current models at OpenAI
-(defun openai-list-models (api-key username) 
+(defun openai-list-models ()
   "Retrieves a list of currently available GPT-3 models from OpenAI."
-  (let ((url "https://api.openai.com/v1/models")) 
-    (get-buffer-create "*openai*") 
-    (with-current-buffer (get-buffer-create "*openai*") 
-      (goto-char (point-max)) 
-      (insert "========== List of OpenAI models ==========\n") 
-      (with-current-buffer (url-retrieve-synchronously url 
-                                                       :headers `(("Authorization"
-                                                                   . ,(concat "Bearer " api-key)) 
-                                                                  ("User-Agent" . ,username))) 
-        (goto-char (point-min)) 
-        (search-forward "\n\n") 
-        (setq openai-models (mapcar (lambda (x) 
-                                      (cdr (assoc 'id x))) 
-                                    (cdr (assoc 'data (json-read)))))) 
-      (mapc (lambda (x) 
-              (insert (format "%s\n" x))) openai-models) 
-      (insert "=========================================\n")) 
-    (switch-to-buffer-other-window "*openai*")))
+  (interactive)
+  (with-current-buffer (get-buffer-create "*openai-models*")
+    (erase-buffer)
+    (async-shell-command (format "curl https://api.openai.com/v1/models \
+    -H 'Authorization: Bearer %s'" openai-api-key) "*openai-models*" "*Messages*")
+    (goto-char (point-min))
+    (re-search-forward "^.*object.*$")
+    (delete-region (point-min) (point))
+    (pop-to-buffer (current-buffer))))
 
+(openai-list-models)
 (provide 'openai)
 ;;; openai.el ends here
