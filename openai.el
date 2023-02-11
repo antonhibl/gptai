@@ -126,16 +126,13 @@ Optional argument BUFFER-NAME buffer to prompt from."
       (insert "===============\n")
       (display-buffer (current-buffer) t))))
 
-;; allow for sending image queries to DALL-E, response is simply the URL of the
-;; image. I cannot find a good way to download this image through emacs.
 (defun openai-send-image-query (prompt n size filepath)
   "Sends a query to OpenAI Image Generation API and displays the response in a new buffer and downloads the generated images."
   (interactive
    (list (read-string "Prompt: ")
          (read-number "Number of images to generate: " 1)
          (read-string "Image size (e.g. 1024x1024): " "1024x1024")
-         (read-string "Enter output file: " (format "%s%s.png" "~/Pictures/ai-"
-                                                    (format-time-string "%T")))))
+         (read-directory-name "Enter output directory: " "~/Pictures")))
   (when (null openai-api-key)
     (error "OpenAI API key is not set"))
   (let* ((url "https://api.openai.com/v1/images/generations")
@@ -155,18 +152,29 @@ Optional argument BUFFER-NAME buffer to prompt from."
           (let ((response (json-read)))
             (when (assoc 'error response)
               (error (cdr (assoc 'message (cdr (assoc 'error response))))))
-            (with-current-buffer (get-buffer-create "openai")
+            (with-current-buffer (get-buffer-create "*openai*")
               (erase-buffer)
-              (insert (pp-to-string (cdr (car (elt (cdr (assoc 'data response)) 0)))))
-              (switch-to-buffer-other-window (current-buffer)))
-            (async-shell-command (format "curl '%s' > %s" (cdr (car (elt (cdr
-                                                                          (assoc
-                                                                           'data
-                                                                           response))
-                                                                         0)))
-                                         filepath))
-            (sleep-for 2 500)
-            (find-file filepath)))
+              (insert (format "Generated image URLs:\n"))
+              (setq indn n)
+              (setq image (let ((indn (length (cdr (assoc 'data response))))
+                    (urls '()))
+                (dotimes (x indn)
+                  (push (cdr (assoc 'url (elt (cdr (assoc 'data response)) x))) urls))
+                (reverse urls)))
+              (insert (format "%s\n"
+                              (let ((indn (length (cdr (assoc 'data response))))
+                                    (urls '()))
+                                (dotimes (x indn)
+                                  (push (cdr (assoc 'url (elt (cdr (assoc 'data response)) x))) urls))
+                                (reverse urls)))))
+            (switch-to-buffer-other-window (current-buffer)))
+          (setq index 0)
+          (let ((images image))
+              (dolist (image images)
+                (async-shell-command (format "curl '%s' > %s/%s_%d.png" image filepath (format-time-string "%T") index))
+                (sleep-for 2 500)
+                (setq index (+ index 1))))
+            (message "Finished downloading %d images to %s" n filepath))
       (error (error "Error while sending request to OpenAI Image Generation API: %s"
                     (error-message-string err))))))
 
