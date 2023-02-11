@@ -108,8 +108,7 @@ Argument OPENAI-PROMPT prompt."
 
 ;; send buffer's text as prompts
 (defun openai-send-query-from-buffer (&optional buffer-name)
-  "Sends a query to OpenAI API and displays the response in a new buffer.
-Optional argument BUFFER-NAME buffer to prompt from."
+  "Sends a query to OpenAI API using the buffer as a prompt."
   (interactive
    (list (read-buffer "Buffer: " (current-buffer))))
   (let ((openai-prompt (with-current-buffer buffer-name
@@ -127,7 +126,7 @@ Optional argument BUFFER-NAME buffer to prompt from."
       (display-buffer (current-buffer) t))))
 
 (defun openai-send-image-query (prompt n size filepath)
-  "Sends a query to OpenAI Image Generation API and displays the response in a new buffer and downloads the generated images."
+  "Sends a query to the OpenAI Image Generation API."
   (interactive
    (list (read-string "Prompt: ")
          (read-number "Number of images to generate: " 1)
@@ -179,20 +178,25 @@ Optional argument BUFFER-NAME buffer to prompt from."
                     (error-message-string err))))))
 
 ;; list all currently available models from the list of current models at OpenAI
-(defun openai-list-models ()
-  "Retrieves a lsit of currently available GPT-3 models from OpenAI."
-  (interactive)
-  (let ((url "https://api.openai.com/v1/models"))
-    (get-buffer-create "*openai*")
-    (with-current-buffer (get-buffer-create "*openai*")
-      (goto-char (point-max))
-      (insert "========== List of OpenAI models ==========\n")
-      (with-current-buffer (url-retrieve-synchronously url)
-        (goto-char (point-min))
-        (search-forward "\n\n")
-        (setq openai-models (mapcar (lambda (x) (cdr (assoc 'id x))) (cdr (assoc 'data (json-read))))))
-        (mapc (lambda (x) (insert (format "%s\n" x))) openai-models)
-        (insert "=========================================\n"))
+(defun openai-list-models (api-key username) 
+  "Retrieves a list of currently available GPT-3 models from OpenAI."
+  (let ((url "https://api.openai.com/v1/models")) 
+    (get-buffer-create "*openai*") 
+    (with-current-buffer (get-buffer-create "*openai*") 
+      (goto-char (point-max)) 
+      (insert "========== List of OpenAI models ==========\n") 
+      (with-current-buffer (url-retrieve-synchronously url 
+                                                       :headers `(("Authorization"
+                                                                   . ,(concat "Bearer " api-key)) 
+                                                                  ("User-Agent" . ,username))) 
+        (goto-char (point-min)) 
+        (search-forward "\n\n") 
+        (setq openai-models (mapcar (lambda (x) 
+                                      (cdr (assoc 'id x))) 
+                                    (cdr (assoc 'data (json-read)))))) 
+      (mapc (lambda (x) 
+              (insert (format "%s\n" x))) openai-models) 
+      (insert "=========================================\n")) 
     (switch-to-buffer-other-window "*openai*")))
 
 (provide 'openai)

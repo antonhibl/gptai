@@ -22,6 +22,7 @@ these are all shown below:
   ;; load the package file
   (load-file "/path/to/OpenAI.el") ;; load the package manually
   (setq openai-model "<MODEL-HERE>") ;; this is only relevant for text models
+  (setq openai-username "<USERNAME-HERE>")
   (setq openai-api-key "<API-KEY-HERE>")
   (global-set-key (kbd "C-c o") 'openai-send-query)
 #+end_src
