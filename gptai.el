@@ -161,17 +161,82 @@ Argument GPTAI-LANGUAGE language to generate."
           (delete-region (region-beginning) (region-end))
           (insert text)))))
 
-;; code generation, takes selection as prompt, and asks what language to generate
-(defun gptai-code-query (gptai-language)
-  "Sends selection text as prompt to OpenAI API to code in a language.
-Argument GPTAI-LANGUAGE language to generate"
+;; code generation query, prompts for instructions and language
+(defun gptai-code-query (gptai-instructions gptai-language)
+  "Sends instructions to OpenAI API to code in a language.
+Argument GPTAI-INSTRUCTIONS code instructions for query.
+Argument GPTAI-LANGUAGE language to generate."
   (interactive
-   (read-string "Language to generate: "))
+   (list (read-string "Instructions: ")
+         (read-string "Language: ")))
+    (with-current-buffer (current-buffer)
+      (let ((response (gptai-request (format "%s(%s)" gptai-instructions gptai-language))))
+        (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
+          (delete-region (region-beginning) (region-end))
+          (insert text)))))
+
+;; explains code from selection text
+(defun gptai-explain-code-from-selection ()
+  "Sends selection code to OpenAI API to explain."
+  (interactive)
   (let ((gptai-prompt (if (use-region-p)
                     (buffer-substring-no-properties (region-beginning) (region-end))
-                  (read-string "Instructions: "))))
+                  (read-string "Code: "))))
     (with-current-buffer (current-buffer)
-      (let ((response (gptai-request (format "%s(%s)" gptai-prompt gptai-language))))
+      (let ((response (gptai-request (format "Explain the following: %s" gptai-prompt))))
+        (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
+          (insert text)
+          (insert "\n\n"))))))
+
+;; help document code from selection text
+(defun gptai-document-code-from-selection ()
+  "Sends selection code to OpenAI API to write documentation."
+  (interactive)
+  (let ((gptai-prompt (if (use-region-p)
+                    (buffer-substring-no-properties (region-beginning) (region-end))
+                  (read-string "Code: "))))
+    (with-current-buffer (current-buffer)
+      (let ((response (gptai-request (format "Please write the documentation for the following code: %s" gptai-prompt))))
+        (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
+          (insert text)
+          (insert "\n\n"))))))
+
+;; optimizes code from selection text
+(defun gptai-optimize-code-from-selection ()
+  "Sends selection code to OpenAI API to optimize."
+  (interactive)
+  (let ((gptai-prompt (if (use-region-p)
+                    (buffer-substring-no-properties (region-beginning) (region-end))
+                  (read-string "Code: "))))
+    (with-current-buffer (current-buffer)
+      (let ((response (gptai-request (format "Optimize and refactor the following code: %s" gptai-prompt))))
+        (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
+          (delete-region (region-beginning) (region-end))
+          (insert text))))))
+
+
+;; improve code from selection text
+(defun gptai-improve-code-from-selection ()
+  "Sends selection code to OpenAI API to improve."
+  (interactive)
+  (let ((gptai-prompt (if (use-region-p)
+                    (buffer-substring-no-properties (region-beginning) (region-end))
+                  (read-string "Code: "))))
+    (with-current-buffer (current-buffer)
+      (let ((response (gptai-request (format "Improve and extend the following code: %s" gptai-prompt))))
+        (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
+          (delete-region (region-beginning) (region-end))
+          (insert text))))))
+
+;; fix code from selection text
+(defun gptai-fix-code-from-selection ()
+  "Sends selected code to OpenAI API to fix a bug."
+  (interactive)
+  (let ((gptai-prompt (if (use-region-p)
+                    (buffer-substring-no-properties (region-beginning) (region-end))
+                  (read-string "Code: "))))
+    (with-current-buffer (current-buffer)
+      (let ((response (gptai-request (format "There is a bug in the following function, please help me fix it: %s" gptai-prompt))))
         (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
           (delete-region (region-beginning) (region-end))
           (insert text))))))
