@@ -1,7 +1,7 @@
-#+TITLE: OpenAI.el
+#+TITLE: GPTAI.el
 #+AUTHOR: Anton Hibl
 
-* Open AI API for Emacs
+* GPTAI :: an OpenAI API for Emacs
 
 This allows for easy communication between emacs and the openAI API
 platform; allows using all of the available models and integrates cleanly with
@@ -10,8 +10,8 @@ emacs toolings. Here is the basic things you will need for set-up:
 - Load the package file manually (Moving onto MELPA soon, will be automated
   then).
 - Define the desired model to use (available models can be found by running
-  ~openai-list-models~ which will populate the ~openai-models~ variable with the
-  list of all available models, it will also display this list in the *openai*
+  ~gptai-list-models~ which will populate the ~gptai-models~ variable with the
+  list of all available models, it will also display this list in the *gptai*
   buffer).
 - Define your API key (your own key can be obtained from [[https://platform.openai.com/account/api-keys][OpenAI API Keys]])
 - Optionally define a keybinding for sending queries
@@ -20,11 +20,11 @@ these are all shown below:
 
 #+begin_src emacs-lisp
   ;; load the package file
-  (load-file "/path/to/OpenAI.el") ;; load the package manually
-  (setq openai-model "<MODEL-HERE>") ;; this is only relevant for text models
-  (setq openai-username "<USERNAME-HERE>")
-  (setq openai-api-key "<API-KEY-HERE>")
-  (global-set-key (kbd "C-c o") 'openai-send-query)
+  (load-file "/path/to/gptai.el") ;; load the package manually
+  (setq gptai-model "<MODEL-HERE>") ;; this is only relevant for text models
+  (setq gptai-username "<USERNAME-HERE>")
+  (setq gptai-api-key "<API-KEY-HERE>")
+  (global-set-key (kbd "C-c o") 'gptai-send-query)
 #+end_src
 
 ** Text Querying
@@ -32,27 +32,36 @@ these are all shown below:
 You can send textual queries to different models of openAI using the
 functions:
 
-- ~openai-send-query~
+- ~gptai-send-query~
 
-  Prompts in the minibuffer a query and returns the output into the
-  *openai* buffer.
+  Prompts in the minibuffer a query and returns the output at the point.
   
-- ~openai-send-query-from-selection~
+- ~gptai-send-query-from-selection~
 
-  Sends the text in the current selection to openai as the prompt to the openAI
-  API model you specified in your configurations, returns the output into the
-  *openai* buffer. 
+  Sends the text in the current selection to openAI as the prompt to the openAI
+  API model you specified in your configurations, returns the output in place of
+  the original selection.
 
-- ~openai-send-query-from-buffer~
+- ~gptai-send-query-from-buffer~
 
   Sends the current buffer as the prompt to the openAI API model you specified
-  in your configurations, returns the output into the *openai* buffer.
+  in your configurations, returns the output in place of the original buffer.
+
+- ~gptai-spellcheck-text-from-selection~
+
+  Sends the selected text for spellchecking to openAI and replaces the selection
+  with the corrected text.
+
+- ~gptai-elaborate-on-text-from-selection~
+
+  Sends the selected text for further elaboration by openAI and replaces the
+  original selection with the improved text.
 
 ** Image Querying
 
 You can generate images with the DALL-E engine using:
 
-- ~openai-send-image-query~
+- ~gptai-send-image-query~
 
   Prompts the user in the minibuffer for
 
@@ -62,7 +71,26 @@ You can generate images with the DALL-E engine using:
   - Where you want to store them on the disk
 
   It will then generate those images at the API endpoint, then use curl to
-  download those images to your specified directory path.
+  download those images to your specified directory path. Once it is done, if
+  one image was downloaded it will open it in a new buffer for viewing,
+  otherwise if more were downloaded it will simply display success when done.
+
+** Code Querying and Generation
+
+Using the ~gptai-code-query~ and ~gptai-code-query-from-selection~ functions,
+you are able to generate code from instructive prompts in specified languages,
+both of these functions by default will prompt the user for a language and
+return the returned code in-place at your selection or point in the buffer.
+
+- ~gptai-code-query~
+
+  Prompts the user for instructions and language to use; then returns the output
+  code that was generated at the point.
+
+- ~gptai-code-query-from-selection~
+
+  Uses the selection text as the instructions and prompts for a language to use;
+  then returns the code that was generated in place of the original selection.
 
 ** Contributing
 
