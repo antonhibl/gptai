@@ -75,40 +75,51 @@ Argument GPTAI-PROMPT prompt."
       (error (error "Error while sending request to OpenAI API: %s"
                     (error-message-string gptai-err))))))
 
-;; standard way to send a query, interactively prompts user in emacs
+;; send query simple
 (defun gptai-send-query (gptai-prompt)
-  "Sends a query to OpenAI API and displays the response in a new buffer.
+  "Sends a query to OpenAI API and insert the response text at the current point.
 Argument GPTAI-PROMPT prompt."
   (interactive
-   (list (read-string "Query: ")))
-  (with-current-buffer (get-buffer-create "*openai*")
-    (goto-char (point-max))
-    (insert "===============\n")
-    (insert (format "Request: %s\n" gptai-prompt))
-    (let ((response (gptai-request gptai-prompt)))
-      (insert (format "Response: %s\n" response))
-      (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
-        (insert (format "Text: %s\n" text))))
-    (insert "===============\n")
-    (display-buffer (current-buffer) t)))
+   (list (read-string "Prompt: ")))
+  (let ((response (gptai-request gptai-prompt)))
+    (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
+      (if text
+          (insert text)
+        (error
+         "Response doesn't contain text data")))))
 
-;; send selection text as prompt
+;; send query from selections
 (defun gptai-send-query-from-selection ()
-  "Sends query to OpenAI API using selected text as prompt."
+  "Sends query to OpenAI API using selected text, replace selection w/ resp."
   (interactive)
   (let ((gptai-prompt (if (use-region-p)
-                    (buffer-substring-no-properties (region-beginning) (region-end))
-                  (read-string "Query: "))))
-    (with-current-buffer (get-buffer-create "*openai*")
-      (goto-char (point-max))
-      (insert "===============\n")
-      (insert (format "Request: %s\n" gptai-prompt))
-      (let ((response (gptai-request gptai-prompt)))
-        (insert (format "Response: %s\n" response))
-        (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
-          (insert (format "Text: %s\n" text))))
-      (insert "===============\n")
-      (display-buffer (current-buffer) t))))
+                          (buffer-substring-no-properties
+                           (region-beginning)
+                           (region-end))
+                        (read-string "Query: "))))
+    (let ((response (gptai-request gptai-prompt)))
+      (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
+        (delete-region (region-beginning)
+                       (region-end))
+        (insert text)))))
+
+;; send query from buffer
+(defun gptai-send-query-from-buffer (&optional buffer-name)
+  "Sends a query to OpenAI API using the buffer as a prompt.
+Optional argument BUFFER-NAME buffer to send."
+  (interactive
+   (list (read-buffer "Buffer: " (current-buffer))))
+  (let ((gptai-prompt (with-current-buffer buffer-name
+                        (buffer-substring
+                         (point-min)
+                         (point-max)))))
+    (let ((response (gptai-request gptai-prompt)))
+      (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response))
+                                         0)))))
+        (with-current-buffer buffer-name
+          (erase-buffer)
+          (insert text)
+          (display-buffer (current-buffer) t))))))
 
 ;; spellcheck selection in place with openGPT
 (defun gptai-spellcheck-text-from-selection ()
@@ -164,26 +175,6 @@ Argument GPTAI-LANGUAGE language to generate"
         (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
           (delete-region (region-beginning) (region-end))
           (insert text))))))
-
-;; send buffer's text as prompts
-(defun gptai-send-query-from-buffer (&optional buffer-name)
-  "Sends a query to OpenAI API using the buffer as a prompt.
-Optional argument BUFFER-NAME buffer to send."
-  (interactive
-   (list (read-buffer "Buffer: " (current-buffer))))
-  (let ((gptai-prompt (with-current-buffer buffer-name
-                  (buffer-substring (point-min) (point-max)))))
-    (with-current-buffer (get-buffer-create "*openai*")
-      (goto-char (point-max))
-      (insert "===============\n")
-      (insert (format "Request: %s\n" gptai-prompt))
-      (let ((response (gptai-request gptai-prompt)))
-        (insert (format "Response: %s\n" response))
-        (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response))
-                                           0)))))
-          (insert (format "Text: %s\n" text))))
-      (insert "===============\n")
-      (display-buffer (current-buffer) t))))
 
 (defun gptai-send-image-query (prompt n size filepath)
   "Sends a query to the OpenAI Image Generation API.
