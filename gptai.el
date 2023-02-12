@@ -110,6 +110,22 @@ Argument GPTAI-PROMPT prompt."
       (insert "===============\n")
       (display-buffer (current-buffer) t))))
 
+update this function so that instead of opening a new buffer for the output, it
+replaces the selection in place with the text from the response data(Emacs lisp):
+
+;; spellcheck selection in place with openGPT
+(defun gptai-spellcheck-text-from-selection ()
+  "Sends query to OpenAI API to spellcheck the selection region."
+  (interactive)
+  (let ((gptai-prompt (if (use-region-p)
+                    (buffer-substring-no-properties (region-beginning) (region-end))
+                  (read-string "Text: "))))
+    (with-current-buffer (current-buffer) 
+      (let ((response (gptai-request (format "Spellcheck this text: %s" gptai-prompt))))
+        (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
+          (delete-region (region-beginning) (region-end))
+          (insert text))))))
+
 ;; send buffer's text as prompts
 (defun gptai-send-query-from-buffer (&optional buffer-name)
   "Sends a query to OpenAI API using the buffer as a prompt.
