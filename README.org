@@ -92,6 +92,30 @@ return the returned code in-place at your selection or point in the buffer.
   Uses the selection text as the instructions and prompts for a language to use;
   then returns the code that was generated in place of the original selection.
 
+- ~gpt-explain-code-from-selection~
+
+  Explain the code from the selection, return output above selection.
+
+- ~gpt-fix-code-from-selection~
+
+  Fix and debug the code from the selection, return the output in place of the
+  original selection.
+
+- ~gpt-document-code-from-selection~
+
+  Document and describe the code from the selection, return output above
+  selection.
+
+- ~gpt-optimize-code-from-selection~
+
+  Optimizes and refactors code from selection, returns output in place of the
+  original selection.
+
+- ~gpt-improve-code-from-selection~
+
+  Improves and extends on code from selection, returns output in place of
+  original selection.
+
 ** Contributing
 
 Feel free to make a PR with improvements.

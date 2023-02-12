@@ -148,18 +148,20 @@ Optional argument BUFFER-NAME buffer to send."
           (insert text))))))
 
 ;; code generation query, prompts for instructions and language
-(defun gptai-code-query-from-selection (gptai-instructions gptai-language)
+(defun gptai-code-query-from-selection (gptai-language)
   "Sends instructions to OpenAI API to code in a language.
 Argument GPTAI-INSTRUCTIONS code instructions for query.
 Argument GPTAI-LANGUAGE language to generate."
   (interactive
-   (list (read-string "Instructions: ")
-         (read-string "Language: ")))
+   (list (read-string "Language: ")))
+  (let ((gptai-code-prompt (if (use-region-p)
+                    (buffer-substring-no-properties (region-beginning) (region-end))
+                  (read-string "Code: "))))
     (with-current-buffer (current-buffer)
-      (let ((response (gptai-request (format "%s(%s)" gptai-instructions gptai-language))))
+      (let ((response (gptai-request (format "%s(%s)" gptai-code-prompt gptai-language))))
         (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
           (delete-region (region-beginning) (region-end))
-          (insert text)))))
+          (insert text))))))
 
 ;; code generation query, prompts for instructions and language
 (defun gptai-code-query (gptai-instructions gptai-language)
