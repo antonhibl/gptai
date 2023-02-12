@@ -117,8 +117,50 @@ Argument GPTAI-PROMPT prompt."
   (let ((gptai-prompt (if (use-region-p)
                     (buffer-substring-no-properties (region-beginning) (region-end))
                   (read-string "Text: "))))
-    (with-current-buffer (current-buffer) 
+    (with-current-buffer (current-buffer)
       (let ((response (gptai-request (format "Spellcheck this text: %s" gptai-prompt))))
+        (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
+          (delete-region (region-beginning) (region-end))
+          (insert text))))))
+
+;; elaborate on text from selection in place with openGPT
+(defun gptai-elaborate-on-text-from-selection ()
+  "Sends query to OpenAI API to elaborate on the selection region."
+  (interactive)
+  (let ((gptai-prompt (if (use-region-p)
+                    (buffer-substring-no-properties (region-beginning) (region-end))
+                  (read-string "Text: "))))
+    (with-current-buffer (current-buffer)
+      (let ((response (gptai-request (format "Elaborate on this text: %s" gptai-prompt))))
+        (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
+          (delete-region (region-beginning) (region-end))
+          (insert text))))))
+
+;; code generation query, prompts for instructions and language
+(defun gptai-code-query-from-selection (gptai-instructions gptai-language)
+  "Sends instructions to OpenAI API to code in a language.
+Argument GPTAI-INSTRUCTIONS code instructions for query.
+Argument GPTAI-LANGUAGE language to generate."
+  (interactive
+   (list (read-string "Instructions: ")
+         (read-string "Language: ")))
+    (with-current-buffer (current-buffer)
+      (let ((response (gptai-request (format "%s(%s)" gptai-instructions gptai-language))))
+        (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
+          (delete-region (region-beginning) (region-end))
+          (insert text)))))
+
+;; code generation, takes selection as prompt, and asks what language to generate
+(defun gptai-code-query (gptai-language)
+  "Sends selection text as prompt to OpenAI API to code in a language.
+Argument GPTAI-LANGUAGE language to generate"
+  (interactive
+   (read-string "Language to generate: "))
+  (let ((gptai-prompt (if (use-region-p)
+                    (buffer-substring-no-properties (region-beginning) (region-end))
+                  (read-string "Instructions: "))))
+    (with-current-buffer (current-buffer)
+      (let ((response (gptai-request (format "%s(%s)" gptai-prompt gptai-language))))
         (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
           (delete-region (region-beginning) (region-end))
           (insert text))))))
