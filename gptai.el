@@ -1,6 +1,6 @@
 ;;; gptai.el --- Integrate with the OpenAI API -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2023 Free Software Foundation, Inc.
+;; Copyright (C) 2023 Hibl, Anton
 
 ;; Author: Anton Hibl <antonhibl11@gmail.com>
 ;; URL: https://github.com/antonhibl/gptai
