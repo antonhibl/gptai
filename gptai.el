@@ -1,11 +1,12 @@
-;;; openai.el --- Integrate with the OpenAI API -*- lexical-binding: t; -*-
+;;; gptai.el --- Integrate with the OpenAI API -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023 Free Software Foundation, Inc.
 
 ;; Author: Anton Hibl <antonhibl11@gmail.com>
 ;; URL: https://github.com/antonhibl/openai
-;; Keywords: AI
+;; Keywords: comm, convenience
 ;; Version: 0.1.0
+;; Package-Requires: ((emacs "24.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -31,57 +32,60 @@
 ;;; Code:
 
 ;;; Customization
-(defgroup openai nil
-  "OpenAI API."
-  :group 'emacs)
+(defgroup gptai nil
+  "Use the openAI API."
+  :prefix "gptai-"
+  :group 'comm
+  :link '(url-link :tag "Repository" "https://github.com/antonhibl/openai"))
 
 ;; dependencies
 (require 'url)
 (require 'json)
 
 ;; default values for local variables
-(defvar openai-base-url "https://api.openai.com/v1/completions")
-(defvar openai-model nil)
-(defvar openai-api-key nil)
+(defvar gptai-base-url "https://api.openai.com/v1/completions")
+(defvar gptai-model nil)
+(defvar gptai-api-key nil)
+(defvar url-http-end-of-headers)
 
 ;; parse prompt into a request for the openai API
-(defun openai-request (openai-prompt)
+(defun gptai-request (gptai-prompt)
   "Sends a request to OpenAI API and return the response.
-Argument OPENAI-PROMPT prompt."
-  (when (null openai-api-key)
+Argument GPTAI-PROMPT prompt."
+  (when (null gptai-api-key)
     (error "OpenAI API key is not set"))
   (let* ((url-request-method "POST")
          (url-request-extra-headers
           `(("Content-Type" . "application/json")
-            ("Authorization" . ,(format "Bearer %s" openai-api-key))))
+            ("Authorization" . ,(format "Bearer %s" gptai-api-key))))
          (url-request-data
-          (json-encode `(("model" . ,openai-model)
-                         ("prompt" . ,openai-prompt)
+          (json-encode `(("model" . ,gptai-model)
+                         ("prompt" . ,gptai-prompt)
                          ("temperature" . 0.7)
                          ("max_tokens" . 1000)))))
-    (message "Sending request to OpenAI API using model '%s'" openai-model)
-    (condition-case openai-err
+    (message "Sending request to OpenAI API using model '%s'" gptai-model)
+    (condition-case gptai-err
         (with-current-buffer
-            (url-retrieve-synchronously openai-base-url nil 'silent)
+            (url-retrieve-synchronously gptai-base-url nil 'silent)
           (goto-char url-http-end-of-headers)
           (let ((response (json-read)))
             (when (assoc 'error response)
               (error (cdr (assoc 'message (cdr (assoc 'error response))))))
             response))
       (error (error "Error while sending request to OpenAI API: %s"
-                    (error-message-string openai-err))))))
+                    (error-message-string gptai-err))))))
 
 ;; standard way to send a query, interactively prompts user in emacs
-(defun openai-send-query (openai-prompt)
+(defun gptai-send-query (gptai-prompt)
   "Sends a query to OpenAI API and displays the response in a new buffer.
-Argument OPENAI-PROMPT prompt."
+Argument GPTAI-PROMPT prompt."
   (interactive
    (list (read-string "Query: ")))
   (with-current-buffer (get-buffer-create "*openai*")
     (goto-char (point-max))
     (insert "===============\n")
-    (insert (format "Request: %s\n" openai-prompt))
-    (let ((response (openai-request openai-prompt)))
+    (insert (format "Request: %s\n" gptai-prompt))
+    (let ((response (gptai-request gptai-prompt)))
       (insert (format "Response: %s\n" response))
       (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
         (insert (format "Text: %s\n" text))))
@@ -89,17 +93,17 @@ Argument OPENAI-PROMPT prompt."
     (display-buffer (current-buffer) t)))
 
 ;; send selection text as prompt
-(defun openai-send-query-from-selection ()
+(defun gptai-send-query-from-selection ()
   "Sends query to OpenAI API using selected text as prompt."
   (interactive)
-  (let ((openai-prompt (if (use-region-p)
+  (let ((gptai-prompt (if (use-region-p)
                     (buffer-substring-no-properties (region-beginning) (region-end))
                   (read-string "Query: "))))
     (with-current-buffer (get-buffer-create "*openai*")
       (goto-char (point-max))
       (insert "===============\n")
-      (insert (format "Request: %s\n" openai-prompt))
-      (let ((response (openai-request openai-prompt)))
+      (insert (format "Request: %s\n" gptai-prompt))
+      (let ((response (gptai-request gptai-prompt)))
         (insert (format "Response: %s\n" response))
         (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
           (insert (format "Text: %s\n" text))))
@@ -107,17 +111,18 @@ Argument OPENAI-PROMPT prompt."
       (display-buffer (current-buffer) t))))
 
 ;; send buffer's text as prompts
-(defun openai-send-query-from-buffer (&optional buffer-name)
-  "Sends a query to OpenAI API using the buffer as a prompt."
+(defun gptai-send-query-from-buffer (&optional buffer-name)
+  "Sends a query to OpenAI API using the buffer as a prompt.
+Optional argument BUFFER-NAME buffer to send."
   (interactive
    (list (read-buffer "Buffer: " (current-buffer))))
-  (let ((openai-prompt (with-current-buffer buffer-name
+  (let ((gptai-prompt (with-current-buffer buffer-name
                   (buffer-substring (point-min) (point-max)))))
     (with-current-buffer (get-buffer-create "*openai*")
       (goto-char (point-max))
       (insert "===============\n")
-      (insert (format "Request: %s\n" openai-prompt))
-      (let ((response (openai-request openai-prompt)))
+      (insert (format "Request: %s\n" gptai-prompt))
+      (let ((response (gptai-request gptai-prompt)))
         (insert (format "Response: %s\n" response))
         (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response))
                                            0)))))
@@ -125,20 +130,24 @@ Argument OPENAI-PROMPT prompt."
       (insert "===============\n")
       (display-buffer (current-buffer) t))))
 
-(defun openai-send-image-query (prompt n size filepath)
-  "Sends a query to the OpenAI Image Generation API."
+(defun gptai-send-image-query (prompt n size filepath)
+  "Sends a query to the OpenAI Image Generation API.
+Argument PROMPT prompt to send.
+Argument N number of images to generate.
+Argument SIZE size of images.
+Argument FILEPATH filepath to download to."
   (interactive
    (list (read-string "Prompt: ")
          (read-number "Number of images to generate: " 1)
          (read-string "Image size (e.g. 1024x1024): " "1024x1024")
          (read-directory-name "Enter output directory: " "~/Pictures")))
-  (when (null openai-api-key)
+  (when (null gptai-api-key)
     (error "OpenAI API key is not set"))
   (let* ((url "https://api.openai.com/v1/images/generations")
          (url-request-method "POST")
          (url-request-extra-headers
           `(("Content-Type" . "application/json")
-            ("Authorization" . ,(format "Bearer %s" openai-api-key))))
+            ("Authorization" . ,(format "Bearer %s" gptai-api-key))))
          (url-request-data
           (json-encode `(("prompt" . ,prompt)
                          ("n" . ,n)
@@ -154,42 +163,44 @@ Argument OPENAI-PROMPT prompt."
             (with-current-buffer (get-buffer-create "*openai*")
               (erase-buffer)
               (insert (format "Generated image URLs:\n"))
-              (setq indn n)
-              (setq image (let ((indn (length (cdr (assoc 'data response))))
+              (defvar gptai-image nil)
+              (defvar gptai-indn n)
+              (setq gptai-image (let ((gptai-indn (length (cdr (assoc 'data response))))
                     (urls '()))
-                (dotimes (x indn)
+                (dotimes (x gptai-indn)
                   (push (cdr (assoc 'url (elt (cdr (assoc 'data response)) x))) urls))
                 (reverse urls)))
               (insert (format "%s\n"
-                              (let ((indn (length (cdr (assoc 'data response))))
+                              (let ((gptai-indn (length (cdr (assoc 'data response))))
                                     (urls '()))
-                                (dotimes (x indn)
+                                (dotimes (x gptai-indn)
                                   (push (cdr (assoc 'url (elt (cdr (assoc 'data response)) x))) urls))
                                 (reverse urls)))))
             (switch-to-buffer-other-window (current-buffer)))
-          (setq index 0)
-          (let ((images image))
-              (dolist (image images)
-                (async-shell-command (format "curl '%s' > %s/%s_%d.png" image filepath (format-time-string "%T") index))
+          (defvar gptai-index 0)
+          (defvar gptai-images nil)
+          (defvar gptai-image nil)
+          (let ((gptai-images gptai-image))
+              (dolist (gptai-image gptai-images)
+                (async-shell-command (format "curl '%s' > %s/%s_%d.png" gptai-image filepath (format-time-string "%T") gptai-index))
                 (sleep-for 2 500)
-                (setq index (+ index 1))))
+                (setq gptai-index (+ gptai-index 1))))
             (message "Finished downloading %d images to %s" n filepath))
       (error (error "Error while sending request to OpenAI Image Generation API: %s"
                     (error-message-string err))))))
 
 ;; list all currently available models from the list of current models at OpenAI
-(defun openai-list-models ()
+(defun gptai-list-models ()
   "Retrieves a list of currently available GPT-3 models from OpenAI."
   (interactive)
-  (with-current-buffer (get-buffer-create "*openai-models*")
+  (with-current-buffer (get-buffer-create "*gptai-models*")
     (erase-buffer)
     (async-shell-command (format "curl https://api.openai.com/v1/models \
-    -H 'Authorization: Bearer %s'" openai-api-key) "*openai-models*" "*Messages*")
+    -H 'Authorization: Bearer %s'" gptai-api-key) "*gptai-models*" "*Messages*")
     (goto-char (point-min))
     (re-search-forward "^.*object.*$")
     (delete-region (point-min) (point))
     (pop-to-buffer (current-buffer))))
 
-(openai-list-models)
-(provide 'openai)
-;;; openai.el ends here
+(provide 'gptai)
+;;; gptai.el ends here
