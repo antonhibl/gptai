@@ -3,7 +3,7 @@
 ;; Copyright (C) 2023 Free Software Foundation, Inc.
 
 ;; Author: Anton Hibl <antonhibl11@gmail.com>
-;; URL: https://github.com/antonhibl/openai
+;; URL: https://github.com/antonhibl/gptai
 ;; Keywords: comm, convenience
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "24.1"))
@@ -36,7 +36,7 @@
   "Use the openAI API."
   :prefix "gptai-"
   :group 'comm
-  :link '(url-link :tag "Repository" "https://github.com/antonhibl/openai"))
+  :link '(url-link :tag "Repository" "https://github.com/antonhibl/gptai"))
 
 ;; dependencies
 (require 'url)
