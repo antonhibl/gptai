@@ -24,10 +24,27 @@
 ;;; Commentary:
 
 ;; This is intended to allow for development and programming queries into the
-;; OpenAI API.  This allows for sending queries stright from Emacs directly into
+;; OpenAI API.  This allows for sending queries straight from Emacs directly into
 ;; various models of OpenAI's platform.
 
-;; See the accompanying Readme.org for configuration details.
+;; Configurations that are required are listed as follows:
+;;
+;; - Define the desired model to use (available models can be found by running
+;;   gptai-list-models which will populate the gptai-models variable with the
+;;   list of all available models, it will also display this list in the gptai
+;;   buffer). 
+;;
+;; - Define your OpenAI API key.
+;;
+;; - Optionally define keybindings for sending various queries easily.
+;;
+;; An example of these configurations:
+;;
+;; (setq gptai-model "<MODEL-HERE>") ;; this is only relevant for text models
+;; (setq gptai-username "<USERNAME-HERE>")
+;; (setq gptai-api-key "<API-KEY-HERE>")
+;; (global-set-key (kbd "C-c o") 'gptai-send-query) ;; or some other query fn
+;;
 
 ;;; Code:
 
@@ -47,8 +64,11 @@
 (defvar gptai-model nil)
 (defvar gptai-api-key nil)
 (defvar url-http-end-of-headers)
+(defvar gptai-image)
+(defvar gptai-images)
+(defvar gptai-indn)
+(defvar gptai-index)
 
-;; parse prompt into a request for the openai API
 (defun gptai-request (gptai-prompt)
   "Sends a request to OpenAI API and return the response.
 Argument GPTAI-PROMPT prompt."
@@ -75,7 +95,6 @@ Argument GPTAI-PROMPT prompt."
       (error (error "Error while sending request to OpenAI API: %s"
                     (error-message-string gptai-err))))))
 
-;; send query simple
 (defun gptai-send-query (gptai-prompt)
   "Sends a query to OpenAI API and insert the response text at the current point.
 Argument GPTAI-PROMPT prompt."
@@ -88,9 +107,8 @@ Argument GPTAI-PROMPT prompt."
         (error
          "Response doesn't contain text data")))))
 
-;; send query from selections
-(defun gptai-send-query-from-selection ()
-  "Sends query to OpenAI API using selected text, replace selection w/ resp."
+(defun gptai-send-query-region ()
+  "Sends query to OpenAI API using region, replace region w/ response."
   (interactive)
   (let ((gptai-prompt (if (use-region-p)
                           (buffer-substring-no-properties
@@ -103,8 +121,7 @@ Argument GPTAI-PROMPT prompt."
                        (region-end))
         (insert text)))))
 
-;; send query from buffer
-(defun gptai-send-query-from-buffer (&optional buffer-name)
+(defun gptai-send-query-buffer (&optional buffer-name)
   "Sends a query to OpenAI API using the buffer as a prompt.
 Optional argument BUFFER-NAME buffer to send."
   (interactive
@@ -121,9 +138,8 @@ Optional argument BUFFER-NAME buffer to send."
           (insert text)
           (display-buffer (current-buffer) t))))))
 
-;; spellcheck selection in place with openGPT
-(defun gptai-spellcheck-text-from-selection ()
-  "Sends query to OpenAI API to spellcheck the selection region."
+(defun gptai-spellcheck-region ()
+  "Sends query to OpenAI API to spellcheck the region."
   (interactive)
   (let ((gptai-prompt (if (use-region-p)
                     (buffer-substring-no-properties (region-beginning) (region-end))
@@ -134,9 +150,8 @@ Optional argument BUFFER-NAME buffer to send."
           (delete-region (region-beginning) (region-end))
           (insert text))))))
 
-;; elaborate on text from selection in place with openGPT
-(defun gptai-elaborate-on-text-from-selection ()
-  "Sends query to OpenAI API to elaborate on the selection region."
+(defun gptai-elaborate-on-region ()
+  "Sends query to OpenAI API to elaborate on the region"
   (interactive)
   (let ((gptai-prompt (if (use-region-p)
                     (buffer-substring-no-properties (region-beginning) (region-end))
@@ -147,8 +162,7 @@ Optional argument BUFFER-NAME buffer to send."
           (delete-region (region-beginning) (region-end))
           (insert text))))))
 
-;; code generation query, prompts for instructions and language
-(defun gptai-code-query-from-selection (gptai-language)
+(defun gptai-code-query-region (gptai-language)
   "Sends instructions to OpenAI API to code in a language.
 Argument GPTAI-INSTRUCTIONS code instructions for query.
 Argument GPTAI-LANGUAGE language to generate."
@@ -163,7 +177,6 @@ Argument GPTAI-LANGUAGE language to generate."
           (delete-region (region-beginning) (region-end))
           (insert text))))))
 
-;; code generation query, prompts for instructions and language
 (defun gptai-code-query (gptai-instructions gptai-language)
   "Sends instructions to OpenAI API to code in a language.
 Argument GPTAI-INSTRUCTIONS code instructions for query.
@@ -177,9 +190,8 @@ Argument GPTAI-LANGUAGE language to generate."
           (delete-region (region-beginning) (region-end))
           (insert text)))))
 
-;; explains code from selection text
-(defun gptai-explain-code-from-selection ()
-  "Sends selection code to OpenAI API to explain."
+(defun gptai-explain-code-region ()
+  "Sends region to OpenAI API to explain."
   (interactive)
   (let ((gptai-prompt (if (use-region-p)
                     (buffer-substring-no-properties (region-beginning) (region-end))
@@ -190,9 +202,8 @@ Argument GPTAI-LANGUAGE language to generate."
           (insert text)
           (insert "\n\n"))))))
 
-;; help document code from selection text
-(defun gptai-document-code-from-selection ()
-  "Sends selection code to OpenAI API to write documentation."
+(defun gptai-document-code-region ()
+  "Sends region to OpenAI API to write documentation."
   (interactive)
   (let ((gptai-prompt (if (use-region-p)
                     (buffer-substring-no-properties (region-beginning) (region-end))
@@ -203,9 +214,8 @@ Argument GPTAI-LANGUAGE language to generate."
           (insert text)
           (insert "\n\n"))))))
 
-;; optimizes code from selection text
-(defun gptai-optimize-code-from-selection ()
-  "Sends selection code to OpenAI API to optimize."
+(defun gptai-optimize-code-region ()
+  "Sends region to OpenAI API to optimize."
   (interactive)
   (let ((gptai-prompt (if (use-region-p)
                     (buffer-substring-no-properties (region-beginning) (region-end))
@@ -217,9 +227,8 @@ Argument GPTAI-LANGUAGE language to generate."
           (insert text))))))
 
 
-;; improve code from selection text
-(defun gptai-improve-code-from-selection ()
-  "Sends selection code to OpenAI API to improve."
+(defun gptai-improve-code-region ()
+  "Sends region to OpenAI API to improve."
   (interactive)
   (let ((gptai-prompt (if (use-region-p)
                     (buffer-substring-no-properties (region-beginning) (region-end))
@@ -230,9 +239,8 @@ Argument GPTAI-LANGUAGE language to generate."
           (delete-region (region-beginning) (region-end))
           (insert text))))))
 
-;; fix code from selection text
-(defun gptai-fix-code-from-selection ()
-  "Sends selected code to OpenAI API to fix a bug."
+(defun gptai-fix-code-region ()
+  "Sends region to OpenAI API to fix a bug."
   (interactive)
   (let ((gptai-prompt (if (use-region-p)
                     (buffer-substring-no-properties (region-beginning) (region-end))
@@ -276,8 +284,7 @@ Argument FILEPATH filepath to download to."
             (with-current-buffer (get-buffer-create "*openai*")
               (erase-buffer)
               (insert (format "Generated image URLs:\n"))
-              (defvar gptai-image nil)
-              (defvar gptai-indn n)
+              (setq gptai-indn n)
               (setq gptai-image (let ((gptai-indn (length (cdr (assoc 'data response))))
                     (urls '()))
                 (dotimes (x gptai-indn)
@@ -290,9 +297,7 @@ Argument FILEPATH filepath to download to."
                                   (push (cdr (assoc 'url (elt (cdr (assoc 'data response)) x))) urls))
                                 (reverse urls)))))
             (switch-to-buffer-other-window (current-buffer)))
-          (defvar gptai-index 0)
-          (defvar gptai-images nil)
-          (defvar gptai-image nil)
+          (setq gptai-index 0)
           (let ((gptai-images gptai-image))
               (dolist (gptai-image gptai-images)
                 (async-shell-command (format "curl '%s' > %s/%s_%d.png" gptai-image filepath (format-time-string "%T") gptai-index))
@@ -302,7 +307,6 @@ Argument FILEPATH filepath to download to."
       (error (error "Error while sending request to OpenAI Image Generation API: %s"
                     (error-message-string err))))))
 
-;; list all currently available models from the list of current models at OpenAI
 (defun gptai-list-models ()
   "Retrieves a list of currently available GPT-3 models from OpenAI."
   (interactive)
