@@ -184,6 +184,7 @@ Argument GPTAI-LANGUAGE language to generate."
   (interactive
    (list (read-string "Instructions: ")
          (read-string "Language: ")))
+  ;; place code in current buffer
     (with-current-buffer (current-buffer)
       (let ((response (gptai-request (format "%s(%s)" gptai-instructions gptai-language))))
         (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
