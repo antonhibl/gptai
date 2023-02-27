@@ -62,8 +62,8 @@
 ;; default values for local variables
 (defvar gptai-base-url "https://api.openai.com/v1/completions")
 (defvar gptai-model nil)
-(defcustom gptai-api-key nil
-  "API key for OpenAI"
+(defcustom gptai-api-key ""
+  "API key for OpenAI."
   :type 'string
   :group 'gptai)
 (defvar url-http-end-of-headers)
