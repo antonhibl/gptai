@@ -18,15 +18,13 @@ emacs toolings. Here is the basic things you will need for set-up:
   #+begin_src emacs-lisp
     (require 'gptai)
     (use-package gptai
-      :config
+      :init
     ;; configurations can go here
         ((setq gptai-model "<MODEL-HERE>") 
          (setq gptai-username "<USERNAME-HERE>")
-         (setq gptai-api-key "<API-KEY-HERE>"))
-      :init
+         (setq gptai-api-key "<API-KEY-HERE>")))
     ;; set keybindings optionally
-        (global-set-key (kbd "C-c o") 'gptai-send-query)
-     )
+    (global-set-key (kbd "C-c o") 'gptai-send-query)
   #+end_src
 
 To fill out the details of the configuration section
