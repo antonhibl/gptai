@@ -38,12 +38,20 @@
 ;;
 ;; - Optionally define keybindings for sending various queries easily.
 ;;
-;; An example of these configurations:
+;; An example of these configurations after installing from MELPA is shown
+;; below: 
 ;;
-;; (setq gptai-model "<MODEL-HERE>") ;; this is only relevant for text models
-;; (setq gptai-username "<USERNAME-HERE>")
-;; (setq gptai-api-key "<API-KEY-HERE>")
-;; (global-set-key (kbd "C-c o") 'gptai-send-query) ;; or some other query fn
+;;   (require 'gptai)
+;;   (use-package gptai
+;;      :config
+;;   ;; configurations can go here
+;;        (setq gptai-model "<MODEL-HERE>") 
+;;        (setq gptai-username "<USERNAME-HERE>")
+;;        (setq gptai-api-key "<API-KEY-HERE>")
+;;      :init
+;;   ;; set keybindings optionally
+;;        (global-set-key (kbd "C-c o") 'gptai-send-query)
+;;   ) 
 ;;
 
 ;;; Code:
