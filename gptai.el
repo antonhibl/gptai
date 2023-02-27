@@ -45,9 +45,9 @@
 ;;   (use-package gptai
 ;;      :config
 ;;   ;; configurations can go here
-;;        (setq gptai-model "<MODEL-HERE>") 
-;;        (setq gptai-username "<USERNAME-HERE>")
-;;        (setq gptai-api-key "<API-KEY-HERE>")
+;;        ((setq gptai-model "<MODEL-HERE>") 
+;;         (setq gptai-username "<USERNAME-HERE>")
+;;         (setq gptai-api-key "<API-KEY-HERE>"))
 ;;      :init
 ;;   ;; set keybindings optionally
 ;;        (global-set-key (kbd "C-c o") 'gptai-send-query)
