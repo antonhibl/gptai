@@ -7,25 +7,38 @@ This allows for easy communication between emacs and the openAI API
 platform; allows using all of the available models and integrates cleanly with
 emacs toolings. Here is the basic things you will need for set-up:
 
-- Load the package file manually (Moving onto MELPA soon, will be automated
-  then).
-- Define the desired model to use (available models can be found by running
-  ~gptai-list-models~ which will populate the ~gptai-models~ variable with the
-  list of all available models, it will also display this list in the *gptai*
-  buffer).
+- Install the package from MELPA using:
+
+  #+begin_src emacs-lisp
+      (package-install 'gptai)
+  #+end_src
+
+  then put this in your init.el:
+
+  #+begin_src emacs-lisp
+    (require 'gptai)
+    (use-package gptai
+      :config
+    ;; configurations can go here
+        (setq gptai-model "<MODEL-HERE>") 
+        (setq gptai-username "<USERNAME-HERE>")
+        (setq gptai-api-key "<API-KEY-HERE>")
+      :init
+    ;; set keybindings optionally
+        (global-set-key (kbd "C-c o") 'gptai-send-query)
+     )
+  #+end_src
+
+To fill out the details of the configuration section
+
+- Define the desired model to use; available models can be found by running
+  ~gptai-list-models~ , it will also display this list in the *gptai*
+  buffer. Use this to choose a model and set ~gptai-model~ (text-davinci-003 is
+  a good default model).
+- Define your OpenAI username.
 - Define your API key (your own key can be obtained from [[https://platform.openai.com/account/api-keys][OpenAI API Keys]])
-- Optionally define a keybinding for sending queries
 
-these are all shown below:
-
-#+begin_src emacs-lisp
-  ;; load the package file
-  (load-file "/path/to/gptai.el") ;; load the package manually
-  (setq gptai-model "<MODEL-HERE>") ;; this is only relevant for text models
-  (setq gptai-username "<USERNAME-HERE>")
-  (setq gptai-api-key "<API-KEY-HERE>")
-  (global-set-key (kbd "C-c o") 'gptai-send-query)
-#+end_src
+After that optionally fill out the init section with some keybindings.
 
 ** Text Querying
 
@@ -118,4 +131,6 @@ return the returned code in-place at your selection or point in the buffer.
 
 ** Contributing
 
-Feel free to make a PR with improvements.
+Feel free to make a PR with improvements, all PRs should include your changes as
+well as a addition to the CHANGELOG.md file noting any important changes for
+users to be aware of.
