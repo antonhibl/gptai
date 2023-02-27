@@ -26,3 +26,10 @@ and one of the following headings:
 **Author:** *Anton Hibl*
 
 Added a changelog to help users keep track of changes more clearly.
+
+### Changed
+**Date:** *Feb 26th, 2023*
+**Author:** *Anton Hibl*
+
+Changed gptai-model and gptai-api-key so that they are able to be set through
+the customization menu

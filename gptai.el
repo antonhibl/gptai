@@ -32,7 +32,7 @@
 ;; - Define the desired model to use (available models can be found by running
 ;;   gptai-list-models which will populate the gptai-models variable with the
 ;;   list of all available models, it will also display this list in the gptai
-;;   buffer). 
+;;   buffer).
 ;;
 ;; - Define your OpenAI API key.
 ;;
@@ -61,7 +61,10 @@
 
 ;; default values for local variables
 (defvar gptai-base-url "https://api.openai.com/v1/completions")
-(defvar gptai-model nil)
+(defcustom gptai-model ""
+  "API Model for OpenAI."
+  :type 'string
+  :group 'gptai)
 (defcustom gptai-api-key ""
   "API key for OpenAI."
   :type 'string
@@ -154,7 +157,7 @@ Optional argument BUFFER-NAME buffer to send."
           (insert text))))))
 
 (defun gptai-elaborate-on-region ()
-  "Sends query to OpenAI API to elaborate on the region"
+  "Sends query to OpenAI API to elaborate on the region."
   (interactive)
   (let ((gptai-prompt (if (use-region-p)
                     (buffer-substring-no-properties (region-beginning) (region-end))
