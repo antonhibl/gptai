@@ -36,6 +36,10 @@ To fill out the details of the configuration section
 
 After that optionally fill out the init section with some keybindings.
 
+** Extending the Package
+
+Check out the [[https://github.com/antonhibl/gptai/wiki][wiki]] for examples on how to easily extend this package to your uses
+
 ** Text Querying
 
 You can send textual queries to different models of openAI using the
