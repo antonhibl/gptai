@@ -29,6 +29,7 @@
 
 ;;; Code:
 
+(require 'gptai)
 
 (defun gptai-turbo-request (gptai-prompt)
   "Sends a request to OpenAI API's gpt-3.5-turbo endpoint and returns the response.
