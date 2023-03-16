@@ -1,4 +1,4 @@
-;;; gptai-turbo-tests.el --- Test Suite for gptai-turbo.el -*- lexical-binding: t; -*-
+;;; gptai-turbo-test.el --- Test Suite for gptai-turbo.el -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023 Hibl, Anton
 
@@ -80,5 +80,5 @@
     (fset 'gptai-turbo-request gptai-turbo-request)
     (kill-buffer buffer)))
 
-(provide 'gptai-turbo-tests)
-;;; gptai-turbo-tests.el ends here
+(provide 'gptai-turbo-test)
+;;; gptai-turbo-test.el ends here

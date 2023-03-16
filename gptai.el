@@ -70,6 +70,9 @@
 ;; dependencies
 (require 'url)
 (require 'json)
+(require 'gptai-test)
+(require 'gptai-turbo)
+(require 'gptai-turbo-test)
 
 ;; default values for local variables
 (defvar gptai-base-url "https://api.openai.com/v1/completions")
