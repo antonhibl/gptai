@@ -1,7 +1,9 @@
 #+TITLE: GPTAI.el
 #+AUTHOR: Anton Hibl
 
-* GPTAI :: an OpenAI API for Emacs
+* an OpenAI API for Emacs
+[[https://melpa.org/#/gptai][file:https://melpa.org/packages/gptai-badge.svg]]
+
 
 This allows for easy communication between emacs and the openAI API
 platform; allows using all of the available models and integrates cleanly with
