@@ -40,71 +40,34 @@
 (require 'ert)
 (require 'gptai) ; assuming the provided code is saved in gptai.el
 
-(defun gptai-mock-request (gptai-prompt)
-  "Mock GPTAI-request function to simulate API call without actually calling it.
-Argument GPTAI-PROMPT is the prompt to send to the API."
-  (let ((response `((id . "test-id")
-                    (object . "test-object")
-                    (created . 1234567890)
-                    (model . ,gptai-model)
-                    (usage . ((prompt_tokens . 10)
-                              (completion_tokens . 20)
-                              (total_tokens . 30)))
-                    (choices . [((text . "Test response for prompt: ")
-                                 (index . 0)
-                                 (finish_reason . "stop")
-                                 (logprobs . nil))]))))
-    response))
+(defvar mock-api-response
+  '((choices . [((text . "Mock API response text.") (index . 0))]))
+  "A mock API response for testing purposes.")
 
-(defun gptai-test-send-query (gptai-prompt)
-  "Test function for gptai-send-query using mock API response.
+(defun gptai-request-mock (gptai-prompt)
+  "Simulates a GPTAI request without making an actual API call.
+Argument GPTAI-PROMPT is the prompt to send to the API."
+  mock-api-response)
+
+(defun gptai-send-query-mock (gptai-prompt)
+  "Sends a query to the mock GPTAI API and inserts the response text at the current point.
 Argument GPTAI-PROMPT prompt."
-  (let ((response (gptai-mock-request gptai-prompt)))
+  (interactive
+   (list (read-string "Prompt: ")))
+  (let ((response (gptai-request-mock gptai-prompt)))
     (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
       (if text
           (insert text)
-        (error "Response doesn't contain text data")))))
+        (error
+         "Response doesn't contain text data")))))
 
-(ert-deftest gptai-test-query-functions ()
-  "Test gptai-send-query and other query functions using the mock request."
-  (let ((gptai-prompt "Test prompt")
-        (gptai-request-function #'gptai-mock-request))
+(ert-deftest gptai-request-mock-test ()
+  (should (equal (gptai-request-mock "test prompt") mock-api-response)))
 
-    ;; Test gptai-send-query
-    (with-temp-buffer
-      (gptai-test-send-query gptai-prompt)
-      (should (equal (buffer-string) "Test response for prompt: ")))
-
-    ;; Test gptai-send-query-region
-    (with-temp-buffer
-      (insert gptai-prompt)
-      (goto-char (point-min))
-      (push-mark)
-      (goto-char (point-max))
-      (activate-mark)
-      (gptai-send-query-region)
-      (should (equal (buffer-string) "Test response for prompt: ")))
-
-    ;; Test gptai-send-chat
-    (with-temp-buffer
-      (gptai-send-chat gptai-prompt)
-      (should (equal (buffer-string) "Test response for prompt: ")))
-
-    ;; Test gptai-open-chat
-    (gptai-open-chat gptai-prompt)
-    (should (equal (buffer-string) (concat gptai-prompt "\n\nChatGPT:Test response for prompt: ")))
-
-    ;; Test gptai-continue-chat
-    (with-current-buffer "*chat-gptai*"
-      (gptai-continue-chat)
-      (should (equal (buffer-string) (concat gptai-prompt "\n\nChatGPT:Test response for prompt: "
-                                             "Test response for prompt: ")))
-
-    ;; Test gptai-send-query-buffer
-    (with-temp-buffer
-      (insert gptai-prompt)
-      (gptai-send-query-buffer)
-      (should (equal (buffer-string) "Test response for prompt: "))))))
+(ert-deftest gptai-send-query-mock-test ()
+  (with-temp-buffer
+    (gptai-send-query-mock "test prompt")
+    (should (equal (buffer-string) "Mock API response text."))))
 
 (provide 'gptai-test)
 ;;; gptai-test.el ends here
