@@ -31,6 +31,7 @@
 
 (require 'gptai)
 
+;;;###autoload
 (defun gptai-turbo-request (gptai-prompt)
   "Sends a request to OpenAI API's gpt-3.5-turbo endpoint and returns the response.
 Argument GPTAI-PROMPT is the prompt to send to the API."
@@ -65,6 +66,7 @@ Argument GPTAI-PROMPT is the prompt to send to the API."
                         (error-message-string gptai-err)))))
       (error "Failed to send request to OpenAI API"))))
 
+;;;###autoload
 (defun gptai-turbo-response (gptai-prompt)
   "Sends a request to gpt-3.5-turbo and inserts response at the current point.
 Argument GPTAI-PROMPT prompt to be sent."

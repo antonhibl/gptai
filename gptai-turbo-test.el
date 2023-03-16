@@ -55,12 +55,14 @@
         (usage (prompt_tokens . 11) (completion_tokens . 41) (total_tokens . 52))
         (choices . [((message (role . "assistant") (content . "This is a test response.")) (finish_reason . "stop") (index . 0))])))
 
-;; Test function that simulates gptai-turbo-request without making an actual API call
+;; Test function that simulates gptai-turbo-request without making an API call
+;;;###autoload
 (defun gptai-turbo-request-test (gptai-prompt)
   "Simulates gptai-turbo-request without making an actual API call."
   (let ((first-choice (elt (cdr (assoc 'choices mock-api-response)) 0)))
     (cdr (assoc 'content (cdr (assoc 'message first-choice))))))
 
+;;;###autoload
 (ert-deftest gptai-turbo-request-test ()
   "Test gptai-turbo-request with a mock response."
   (let* ((prompt "Test prompt")
@@ -69,6 +71,7 @@
     (should (string= (gptai-turbo-request prompt) "This is a test response."))
     (fset 'gptai-turbo-request gptai-turbo-request)))
 
+;;;###autoload
 (ert-deftest gptai-turbo-response-test ()
   "Test gptai-turbo-response with a mock response."
   (let* ((prompt "Test prompt")

@@ -40,15 +40,18 @@
 (require 'ert)
 (require 'gptai) ; assuming the provided code is saved in gptai.el
 
+;;;###autoload
 (defvar mock-api-response
   '((choices . [((text . "Mock API response text.") (index . 0))]))
   "A mock API response for testing purposes.")
 
+;;;###autoload
 (defun gptai-request-mock (gptai-prompt)
   "Simulates a GPTAI request without making an actual API call.
 Argument GPTAI-PROMPT is the prompt to send to the API."
   mock-api-response)
 
+;;;###autoload
 (defun gptai-send-query-mock (gptai-prompt)
   "Sends a query to the mock GPTAI API and inserts the response text at the current point.
 Argument GPTAI-PROMPT prompt."
@@ -61,9 +64,11 @@ Argument GPTAI-PROMPT prompt."
         (error
          "Response doesn't contain text data")))))
 
+;;;###autoload
 (ert-deftest gptai-request-mock-test ()
   (should (equal (gptai-request-mock "test prompt") mock-api-response)))
 
+;;;###autoload
 (ert-deftest gptai-send-query-mock-test ()
   (with-temp-buffer
     (gptai-send-query-mock "test prompt")
