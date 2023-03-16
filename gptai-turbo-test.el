@@ -43,6 +43,7 @@
 ;;; Code:
 
 (require 'ert)
+(require 'gptai)
 (require 'gptai-turbo)
 
 ;; Mock API response
