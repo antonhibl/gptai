@@ -88,6 +88,9 @@
 (defvar gptai-indn)
 (defvar gptai-index)
 
+;; import turbo.el
+(load-file "./turbo.el")
+
 (defun gptai-request (gptai-prompt)
   "Sends a request to OpenAI API and returns the response.
 Argument GPTAI-PROMPT is the prompt to send to the API."

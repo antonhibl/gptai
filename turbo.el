@@ -33,7 +33,8 @@ Argument GPTAI-PROMPT is the prompt to send to the API."
       (error "Failed to send request to OpenAI API"))))
 
 (defun gptai-turbo-response (gptai-prompt)
-  "Sends a request to OpenAI API's gpt-3.5-turbo endpoint with GPTAI-PROMPT and inserts the response content at the current point in the buffer."
+  "Sends a request to gpt-3.5-turbo and inserts response at the current point.
+Argument GPTAI-PROMPT prompt to be sent."
   (interactive "sEnter your prompt: ")
   (let ((response (gptai-turbo-request gptai-prompt)))
     (insert response)))
