@@ -70,9 +70,6 @@
 ;; dependencies
 (require 'url)
 (require 'json)
-(require 'gptai-test)
-(require 'gptai-turbo)
-(require 'gptai-turbo-test)
 
 ;; default values for local variables
 (defvar gptai-base-url "https://api.openai.com/v1/completions")
@@ -181,8 +178,6 @@ Argument MESSAGE message to conversate with chatGPT."
                          (point-max)))))
     (gptai-send-query gptai-conversation))
   )
-
-(gptai-open-chat "Hi is this working?")
 
 (defun gptai-send-query-buffer (&optional buffer-name)
   "Sends a query to OpenAI API using the buffer as a prompt.
