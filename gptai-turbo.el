@@ -23,7 +23,7 @@
 
 ;;; Commentary:
 
-;; A rough start to integrating the newer chat endpoints into emacs, working
+;; A rough start to integrating the newer chat endpoints into Emacs, working
 ;; towards a larger chat functionality for this package and the editor as a
 ;; whole.
 
@@ -36,7 +36,7 @@
 
 ;;;###autoload
 (defun gptai-turbo-request (gptai-prompt)
-  "Sends a request to OpenAI API's gpt-3.5-turbo endpoint and returns the response.
+  "Sends a request to OpenAI API's gpt-3.5-turbo endpoint and return the response.
 Argument GPTAI-PROMPT is the prompt to send to the API."
   (when (null gptai-api-key)
     (error "OpenAI API key is not set"))
@@ -71,7 +71,7 @@ Argument GPTAI-PROMPT is the prompt to send to the API."
 
 ;;;###autoload
 (defun gptai-turbo-response (gptai-prompt)
-  "Sends a request to gpt-3.5-turbo and inserts response at the current point.
+  "Sends a request to gpt-3.5-turbo and insert response at the current point.
 Argument GPTAI-PROMPT prompt to be sent."
   (interactive "sEnter your prompt: ")
   (let ((response (gptai-turbo-request gptai-prompt)))

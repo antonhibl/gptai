@@ -24,27 +24,29 @@
 ;;; Commentary:
 
 ;; A suite of tests for the gptai-turbo functions to ensure they work as
-;; expected. To run these tests either:
+;; expected.  To run these tests either:
 
 ;; A. M-x ert will open the ERT interactive test runner, where you can select
-;; the tests you want to run. Press t to run all the tests, or use r to run a
-;; specific test by its name. The test results will be displayed in the ERT test
-;; runner buffer. 
+;; the tests you want to run.  Press t to run all the tests, or use r to run a
+;; specific test by its name.  The test results will be displayed in the ERT test
+;; runner buffer.
 
 ;; B. By running (ert-run-tests-batch-and-exit), the tests will be executed in
 ;; batch mode, and the test results will be displayed in the *Messages*
-;; buffer. If all tests pass, you will see the message All tests passed.
+;; buffer.  If all tests pass, you will see the message All tests passed.
 
 ;; These tests use a mock API response and a test function that simulates
 ;; gptai-turbo-request without making an actual API call to ensure that the
 ;; tests do not depend on the availability of the API and to avoid rate-limiting
-;; issues. 
+;; issues.
 
 ;;; Code:
 
 (require 'ert)
 (require 'gptai)
 (require 'gptai-turbo)
+
+(defvar mock-api-response)
 
 ;; Mock API response
 (setq mock-api-response
@@ -57,27 +59,27 @@
 
 ;; Test function that simulates gptai-turbo-request without making an API call
 ;;;###autoload
-(defun gptai-turbo-request-test (gptai-prompt)
+(defun gptai-turbo-test-request ()
   "Simulates gptai-turbo-request without making an actual API call."
   (let ((first-choice (elt (cdr (assoc 'choices mock-api-response)) 0)))
     (cdr (assoc 'content (cdr (assoc 'message first-choice))))))
 
 ;;;###autoload
-(ert-deftest gptai-turbo-request-test ()
+(ert-deftest gptai-turbo-test-request ()
   "Test gptai-turbo-request with a mock response."
   (let* ((prompt "Test prompt")
          (gptai-turbo-request (symbol-function 'gptai-turbo-request)))
-    (fset 'gptai-turbo-request (symbol-function 'gptai-turbo-request-test))
+    (fset 'gptai-turbo-request (symbol-function 'gptai-turbo-test-request))
     (should (string= (gptai-turbo-request prompt) "This is a test response."))
     (fset 'gptai-turbo-request gptai-turbo-request)))
 
 ;;;###autoload
-(ert-deftest gptai-turbo-response-test ()
+(ert-deftest gptai-turbo-test-response ()
   "Test gptai-turbo-response with a mock response."
   (let* ((prompt "Test prompt")
          (gptai-turbo-request (symbol-function 'gptai-turbo-request))
          (buffer (generate-new-buffer "*gptai-turbo-response-test*")))
-    (fset 'gptai-turbo-request (symbol-function 'gptai-turbo-request-test))
+    (fset 'gptai-turbo-request (symbol-function 'gptai-turbo-test-request))
     (with-current-buffer buffer
       (gptai-turbo-response prompt)
       (should (string= (buffer-string) "This is a test response.")))

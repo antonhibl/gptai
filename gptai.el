@@ -24,7 +24,7 @@
 ;;; Commentary:
 
 ;;
-;;     ____ ____ _____  _    ___       _ 
+;;     ____ ____ _____  _    ___       _
 ;;    / ___|  _ \_   _|/ \  |_ _|  ___| |
 ;;   | |  _| |_) || | / _ \  | |  / _ \ |
 ;;   | |_| |  __/ | |/ ___ \ | | |  __/ |
@@ -32,7 +32,7 @@
 ;;  
 ;; This is intended to allow for development and programming queries into the
 ;; OpenAI API.  This allows for sending queries straight from Emacs directly into
-;; various models of OpenAI's platform. It is a barebones implementation of a
+;; various models of OpenAI's platform.  It is a barebones implementation of a
 ;;     wrapper around the API focused on achieving extensibility.
 
 ;; Configurations that are required are listed as follows:
@@ -47,15 +47,15 @@
 ;; - Optionally define keybindings for sending various queries easily.
 ;;
 ;; An example of these configurations after installing from MELPA is shown
-;; below: 
+;; below:
 ;;
 ;;   (require 'gptai)
 ;;   ;; set standard configurations
-;;   (setq gptai-model "<MODEL-HERE>") 
+;;   (setq gptai-model "<MODEL-HERE>")
 ;;   (setq gptai-username "<USERNAME-HERE>")
 ;;   (setq gptai-api-key "<API-KEY-HERE>")
 ;;   ;; set keybindings optionally
-;;   (global-set-key (kbd "C-c o") 'gptai-send-query) 
+;;   (global-set-key (kbd "C-c o") 'gptai-send-query)
 ;;
 
 ;;; Code:
@@ -89,7 +89,7 @@
 (defvar gptai-index)
 
 (defun gptai-request (gptai-prompt)
-  "Sends a request to OpenAI API and returns the response.
+  "Sends a request to OpenAI API and return the response.
 Argument GPTAI-PROMPT is the prompt to send to the API."
   (when (null gptai-api-key)
     (error "OpenAI API key is not set"))
@@ -146,38 +146,6 @@ Argument GPTAI-PROMPT prompt."
         (delete-region (region-beginning)
                        (region-end))
         (insert text)))))
-
-(defun gptai-send-chat (&optional message)
-  "Opens the *chat-gpt* buffer and initiates a conversation the input.
-Argument MESSAGE message to conversate with chatGPT."
-  (interactive
-   (list (read-string "Chat Message: ")))
-   (gptai-send-query message)
-  )
-
-(defun gptai-open-chat (&optional message)
-  "Opens the *chat-gptai* buffer and initiates a conversation with the input.
-   Argument MESSAGE message to conversate with chatGPT."
-  (interactive
-   (list (read-string "Chat Message: ")))
-    (switch-to-buffer-other-window "*chat-gptai*")
-    (erase-buffer)
-    (insert message)
-    (insert "\n\nChatGPT:")
-    (gptai-send-chat message)
-    (goto-char (point-max))
-    )
-
-(defun gptai-continue-chat ()
-  "Reads in the chat buffer conversation & the latest
-   message, and sends it to chatgpt for processing."
-  (switch-to-buffer "*chat-gptai*")
-  (let ((gptai-conversation (with-current-buffer "*chat-gptai*"
-                        (buffer-substring
-                         (point-min)
-                         (point-max)))))
-    (gptai-send-query gptai-conversation))
-  )
 
 (defun gptai-send-query-buffer (&optional buffer-name)
   "Sends a query to OpenAI API using the buffer as a prompt.
