@@ -29,7 +29,10 @@
 
 ;;; Code:
 
+(require 'url)
 (require 'gptai)
+
+(defvar url-http-end-of-headers)
 
 ;;;###autoload
 (defun gptai-turbo-request (gptai-prompt)
