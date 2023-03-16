@@ -73,6 +73,7 @@
 
 ;; default values for local variables
 (defvar gptai-base-url "https://api.openai.com/v1/completions")
+(defvar gptai-chat-url "https://api.openai.com/v1/chat/completions")
 (defcustom gptai-model ""
   "API Model for OpenAI."
   :type 'string
@@ -88,10 +89,11 @@
 (defvar gptai-index)
 
 (defun gptai-request (gptai-prompt)
-  "Sends a request to OpenAI API and return the response.
-Argument GPTAI-PROMPT prompt."
+  "Sends a request to OpenAI API and returns the response.
+Argument GPTAI-PROMPT is the prompt to send to the API."
   (when (null gptai-api-key)
     (error "OpenAI API key is not set"))
+
   (let* ((url-request-method "POST")
          (url-request-extra-headers
           `(("Content-Type" . "application/json")
@@ -100,18 +102,24 @@ Argument GPTAI-PROMPT prompt."
           (json-encode `(("model" . ,gptai-model)
                          ("prompt" . ,gptai-prompt)
                          ("temperature" . 0.7)
-                         ("max_tokens" . 1000)))))
+                         ("max_tokens" . 1000))))
+         (buffer (url-retrieve-synchronously gptai-base-url nil 'silent))
+         response)
+
     (message "Sending request to OpenAI API using model '%s'" gptai-model)
-    (condition-case gptai-err
-        (with-current-buffer
-            (url-retrieve-synchronously gptai-base-url nil 'silent)
+
+    (if buffer
+        (with-current-buffer buffer
           (goto-char url-http-end-of-headers)
-          (let ((response (json-read)))
-            (when (assoc 'error response)
-              (error (cdr (assoc 'message (cdr (assoc 'error response))))))
-            response))
-      (error (error "Error while sending request to OpenAI API: %s"
-                    (error-message-string gptai-err))))))
+          (condition-case gptai-err
+              (progn
+                (setq response (json-read))
+                (if (assoc 'error response)
+                    (error (cdr (assoc 'message (cdr (assoc 'error response)))))
+                  response))
+            (error (error "Error while parsing OpenAI API response: %s"
+                          (error-message-string gptai-err)))))
+      (error "Failed to send request to OpenAI API"))))
 
 (defun gptai-send-query (gptai-prompt)
   "Sends a query to OpenAI API and insert the response text at the current point.
@@ -138,6 +146,40 @@ Argument GPTAI-PROMPT prompt."
         (delete-region (region-beginning)
                        (region-end))
         (insert text)))))
+
+(defun gptai-send-chat (&optional message)
+  "Opens the *chat-gpt* buffer and initiates a conversation the input.
+Argument MESSAGE message to conversate with chatGPT."
+  (interactive
+   (list (read-string "Chat Message: ")))
+   (gptai-send-query message)
+  )
+
+(defun gptai-open-chat (&optional message)
+  "Opens the *chat-gptai* buffer and initiates a conversation with the input.
+   Argument MESSAGE message to conversate with chatGPT."
+  (interactive
+   (list (read-string "Chat Message: ")))
+    (switch-to-buffer-other-window "*chat-gptai*")
+    (erase-buffer)
+    (insert message)
+    (insert "\n\nChatGPT:")
+    (gptai-send-chat message)
+    (goto-char (point-max))
+    )
+
+(defun gptai-continue-chat ()
+  "Reads in the chat buffer conversation & the latest
+   message, and sends it to chatgpt for processing."
+  (switch-to-buffer "*chat-gptai*")
+  (let ((gptai-conversation (with-current-buffer "*chat-gptai*"
+                        (buffer-substring
+                         (point-min)
+                         (point-max)))))
+    (gptai-send-query gptai-conversation))
+  )
+
+(gptai-open-chat "Hi is this working?")
 
 (defun gptai-send-query-buffer (&optional buffer-name)
   "Sends a query to OpenAI API using the buffer as a prompt.
