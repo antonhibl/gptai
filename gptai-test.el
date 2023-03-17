@@ -38,7 +38,7 @@
 ;;; Code:
 
 (require 'ert)
-(require 'gptai) ; assuming the provided code is saved in gptai.el
+(require 'gptai)
 
 ;;;###autoload
 (defvar gptai-test-mock-api-response
