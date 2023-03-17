@@ -46,27 +46,25 @@
 (require 'gptai)
 (require 'gptai-turbo)
 
-(defvar mock-api-response)
-
 ;; Mock API response
-(setq mock-api-response
-      '((id . "chatcmpl-6uaMfmuqdi2R0Zj5HSgKvcUjQceeJ")
-        (object . "chat.completion")
-        (created . 1678944173)
-        (model . "gpt-3.5-turbo-0301")
-        (usage (prompt_tokens . 11) (completion_tokens . 41) (total_tokens . 52))
-        (choices . [((message (role . "assistant") (content . "This is a test response.")) (finish_reason . "stop") (index . 0))])))
+(defvar gptai-turbo-test-mock-api-response
+  '((id . "chatcmpl-6uaMfmuqdi2R0Zj5HSgKvcUjQceeJ")
+    (object . "chat.completion")
+    (created . 1678944173)
+    (model . "gpt-3.5-turbo-0301")
+    (usage (prompt_tokens . 11) (completion_tokens . 41) (total_tokens . 52))
+    (choices . [((message (role . "assistant") (content . "This is a test response.")) (finish_reason . "stop") (index . 0))])))
 
 ;; Test function that simulates gptai-turbo-request without making an API call
 ;;;###autoload
 (defun gptai-turbo-test-request ()
-  "Simulates gptai-turbo-request without making an actual API call."
-  (let ((first-choice (elt (cdr (assoc 'choices mock-api-response)) 0)))
+  "Simulates `gptai-turbo-request' without making an actual API call."
+  (let ((first-choice (elt (cdr (assoc 'choices gptai-turbo-test-mock-api-response)) 0)))
     (cdr (assoc 'content (cdr (assoc 'message first-choice))))))
 
 ;;;###autoload
-(ert-deftest gptai-turbo-test-request ()
-  "Test gptai-turbo-request with a mock response."
+(ert-deftest gptai-turbo-test-request-test ()
+  "Test `gptai-turbo-request' with a mock response."
   (let* ((prompt "Test prompt")
          (gptai-turbo-request (symbol-function 'gptai-turbo-request)))
     (fset 'gptai-turbo-request (symbol-function 'gptai-turbo-test-request))
@@ -74,8 +72,8 @@
     (fset 'gptai-turbo-request gptai-turbo-request)))
 
 ;;;###autoload
-(ert-deftest gptai-turbo-test-response ()
-  "Test gptai-turbo-response with a mock response."
+(ert-deftest gptai-turbo-test-response-test ()
+  "Test `gptai-turbo-response' with a mock response."
   (let* ((prompt "Test prompt")
          (gptai-turbo-request (symbol-function 'gptai-turbo-request))
          (buffer (generate-new-buffer "*gptai-turbo-response-test*")))
