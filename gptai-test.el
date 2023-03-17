@@ -55,7 +55,6 @@ Argument GPTAI-PROMPT is the prompt to send to the API."
 (defun gptai-test-send-query-mock ()
   "Sends a query to the mock API and insert the response at the point.
 Argument GPTAI-PROMPT prompt."
-  (interactive)
   (let ((response (gptai-test-request-mock)))
     (let ((text (cdr (assoc 'text (elt (cdr (assoc 'choices response)) 0)))))
       (if text
@@ -75,3 +74,4 @@ Argument GPTAI-PROMPT prompt."
 
 (provide 'gptai-test)
 ;;; gptai-test.el ends here
+
