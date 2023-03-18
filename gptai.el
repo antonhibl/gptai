@@ -346,6 +346,5 @@ Argument FILEPATH filepath to download to."
     (delete-region (point-min) (point))
     (pop-to-buffer (current-buffer))))
 
-(autoload 'gptai-test "gptai-test" nil t)
 (provide 'gptai)
 ;;; gptai.el ends here

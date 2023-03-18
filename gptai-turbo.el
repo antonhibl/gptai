@@ -77,6 +77,5 @@ Argument GPTAI-PROMPT prompt to be sent."
   (let ((response (gptai-turbo-request gptai-prompt)))
     (insert response)))
 
-(autoload 'gptai-turbo-test "gptai-turbo-test" nil t)
 (provide 'gptai-turbo)
 ;;; gptai-turbo.el ends here
