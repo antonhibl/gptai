@@ -33,3 +33,15 @@ Added a changelog to help users keep track of changes more clearly.
 
 Changed gptai-model and gptai-api-key so that they are able to be set through
 the customization menu
+
+### Added 
+**Date:** *Mar 17th, 2023*
+**Author:** *Anton Hibl*
+
+
+Added gptai-turbo which includes basic query functionality for the gpt-3.5-turbo
+model; planned to be extended into a larger interface and chat interface
+soon. Tests have been included in the tests directory for development purposes,
+but they are not installed during package-install as they are intended solely
+for development and not for end users. Including them would unnecessarily
+increase the package size.

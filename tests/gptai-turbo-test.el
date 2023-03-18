@@ -40,6 +40,7 @@
 ;; tests do not depend on the availability of the API and to avoid rate-limiting
 ;; issues.
 
+
 ;;; Code:
 
 (require 'ert)
@@ -55,14 +56,12 @@
     (usage (prompt_tokens . 11) (completion_tokens . 41) (total_tokens . 52))
     (choices . [((message (role . "assistant") (content . "This is a test response.")) (finish_reason . "stop") (index . 0))])))
 
-;;;###autoload
 (defun gptai-turbo-test-request (prompt)
   "Simulates `gptai-turbo-request' without making an actual API call.
 Argument PROMPT is the prompt to send to the API, but it's not used in this mock function."
   (let ((first-choice (elt (cdr (assoc 'choices gptai-turbo-test-mock-api-response)) 0)))
     (cdr (assoc 'content (cdr (assoc 'message first-choice))))))
 
-;;;###autoload
 (ert-deftest gptai-turbo-test-request-test ()
   "Test `gptai-turbo-request' with a mock response."
   (let* ((prompt "Test prompt")
@@ -71,7 +70,6 @@ Argument PROMPT is the prompt to send to the API, but it's not used in this mock
     (should (string= (gptai-turbo-request prompt) "This is a test response."))
     (fset 'gptai-turbo-request gptai-turbo-request)))
 
-;;;###autoload
 (ert-deftest gptai-turbo-test-response-test ()
   "Test `gptai-turbo-response' with a mock response."
   (let* ((prompt "Test prompt")
