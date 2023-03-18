@@ -70,7 +70,7 @@ Argument GPTAI-PROMPT is the prompt to send to the API."
       (error "Failed to send request to OpenAI API"))))
 
 ;;;###autoload
-(defun gptai-turbo-response (gptai-prompt)
+(defun gptai-turbo-query (gptai-prompt)
   "Sends a request to gpt-3.5-turbo and insert response at the current point.
 Argument GPTAI-PROMPT prompt to be sent."
   (interactive "sEnter your prompt: ")

@@ -131,6 +131,22 @@ return the returned code in-place at your selection or point in the buffer.
   Improves and extends on code from selection, returns output in place of
   original selection.
 
+** Using the 3.5-turbo models
+
+The newer models of gpt-3.5 and gpt-4 requires a different query structure, this
+means that to use these models there needed to be a seperate query handler; this
+is achieved with ~gpt-turbo.el~. Using the turbo model is as easy as calling
+~gptai-turbo-query~ while passing it a text query input either interactively or
+pragrammatically. Here is an example:
+
+#+begin_src emacs-lisp
+  (gptai-turbo-query "This is a prompt")
+#+end_src
+
+this functions basically the same as gptai-send-query, it just limits you to the
+newer 3.5 turbo, and 4 models for GPT language models instead of giving more
+ability to choose what models you are using witht hes tandard query handler.
+
 ** Contributing
 
 Feel free to make a PR with improvements, all PRs should include your changes as
