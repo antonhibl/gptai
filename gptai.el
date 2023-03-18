@@ -5,7 +5,7 @@
 ;; Author: Anton Hibl <antonhibl11@gmail.com>
 ;; URL: https://github.com/antonhibl/gptai
 ;; Keywords: comm, convenience
-;; Version: 1.0.4
+;; Version: 1.0.5
 ;; Package-Requires: ((emacs "24.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
