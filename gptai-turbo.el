@@ -77,5 +77,18 @@ Argument GPTAI-PROMPT prompt to be sent."
   (let ((response (gptai-turbo-request gptai-prompt)))
     (insert response)))
 
+(defun gptai-turbo-query-region ()
+  "Sends a request to gpt-3.5-turbo using region and replace region w/ response at the current point."
+  (interactive )
+  (let ((gptai-prompt (if (use-region-p)
+                          (buffer-substring-no-properties
+                           (region-beginning)
+                           (region-end))
+                        (read-string "sEnter your prompt: "))))
+  (let ((response (gptai-turbo-request gptai-prompt)))
+    (delete-region (region-beginning)
+                   (region-end))
+    (insert response))))
+
 (provide 'gptai-turbo)
 ;;; gptai-turbo.el ends here
