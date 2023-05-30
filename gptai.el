@@ -82,6 +82,15 @@
   "API key for OpenAI."
   :type 'string
   :group 'gptai)
+(defcustom gptai-temperature 0.7
+  "Temperature for API requests"
+  :type 'int
+  :group 'gptai)
+(defcustom gptai-max-tokens 1000
+  "Max Tokens for API requests"
+  :type 'int
+  :group 'gptai)
+(defvar gptai-turbo-dispatch)
 (defvar url-http-end-of-headers)
 (defvar gptai-image)
 (defvar gptai-images)
@@ -101,8 +110,8 @@ Argument GPTAI-PROMPT is the prompt to send to the API."
          (url-request-data
           (json-encode `(("model" . ,gptai-model)
                          ("prompt" . ,gptai-prompt)
-                         ("temperature" . 0.7)
-                         ("max_tokens" . 1000))))
+                         ("temperature" . gptai-temperature)
+                         ("max_tokens" . gptai-max-tokens))))
          (buffer (url-retrieve-synchronously gptai-base-url nil 'silent))
          response)
 
