@@ -145,7 +145,7 @@ pragrammatically. Here is an example:
 
 this functions basically the same as gptai-send-query, it just limits you to the
 newer 3.5 turbo, and 4 models for GPT language models instead of giving more
-ability to choose what models you are using witht hes tandard query handler.
+ability to choose what models you are using with the standard query handler.
 
 ** Contributing
 
