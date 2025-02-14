@@ -72,8 +72,14 @@
 (require 'json)
 
 ;; default values for local variables
-(defvar gptai-base-url "https://api.openai.com/v1/completions")
-(defvar gptai-chat-url "https://api.openai.com/v1/chat/completions")
+(defcustom gptai-base-url "https://api.openai.com/v1/completions"
+  "API base url for OpenAI completions endpoint."
+  :type 'string
+  :group 'gptai)
+(defcustom gptai-chat-url "https://api.openai.com/v1/chat/completions"
+  "API url for OpenAI chat endpoint."
+  :type 'string
+  :group 'gptai)
 (defcustom gptai-model ""
   "API Model for OpenAI."
   :type 'string
