@@ -76,6 +76,10 @@
   "API base url for OpenAI completions endpoint."
   :type 'string
   :group 'gptai)
+(defcustom gptai-models-url "https://api.openai.com/v1/models"
+  "API url for listing OpenAI models."
+  :type 'string
+  :group 'gptai)
 (defcustom gptai-chat-url "https://api.openai.com/v1/chat/completions"
   "API url for OpenAI chat endpoint."
   :type 'string
@@ -354,8 +358,8 @@ Argument FILEPATH filepath to download to."
   (interactive)
   (with-current-buffer (get-buffer-create "*gptai-models*")
     (erase-buffer)
-    (async-shell-command (format "curl https://api.openai.com/v1/models \
-    -H 'Authorization: Bearer %s'" gptai-api-key) "*gptai-models*" "*Messages*")
+    (async-shell-command (format "curl %s \
+    -H 'Authorization: Bearer %s'" gptai-models-url gptai-api-key) "*gptai-models*" "*Messages*")
     (goto-char (point-min))
     (re-search-forward "^.*object.*$")
     (delete-region (point-min) (point))
