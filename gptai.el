@@ -84,6 +84,10 @@
   "API url for OpenAI chat endpoint."
   :type 'string
   :group 'gptai)
+(defcustom gptai-images-url "https://api.openai.com/v1/images/generations"
+  "API base url for generating OpenAI images."
+  :type 'string
+  :group 'gptai)
 (defcustom gptai-model ""
   "API Model for OpenAI."
   :type 'string
@@ -310,7 +314,7 @@ Argument FILEPATH filepath to download to."
          (read-directory-name "Enter output directory: " "~/Pictures")))
   (when (null gptai-api-key)
     (error "OpenAI API key is not set"))
-  (let* ((url "https://api.openai.com/v1/images/generations")
+  (let* ((url (custom-value 'gptai-images-url))
          (url-request-method "POST")
          (url-request-extra-headers
           `(("Content-Type" . "application/json")
