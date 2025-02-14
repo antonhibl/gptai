@@ -21,8 +21,9 @@ emacs toolings. Here is the basic things you will need for set-up:
     (require 'gptai)
     ;; set configurations
     (setq gptai-model "<MODEL-HERE>") 
-    (setq gptai-username "<USERNAME-HERE>")
     (setq gptai-api-key "<API-KEY-HERE>")
+    ;; if required, specify an alternative base url
+    (setq gptai-base-url "https://api.foo.bar.baz/v1/completions")
     ;; set keybindings optionally
     (global-set-key (kbd "C-c o") 'gptai-send-query)
   #+end_src
@@ -33,8 +34,8 @@ To fill out the details of the configuration section
   ~gptai-list-models~ , it will also display this list in the *gptai*
   buffer. Use this to choose a model and set ~gptai-model~ (text-davinci-003 is
   a good default model).
-- Define your OpenAI username.
 - Define your API key (your own key can be obtained from [[https://platform.openai.com/account/api-keys][OpenAI API Keys]])
+- Define an alternative base URL for an openao API endpoint 
 
 After that optionally fill out the init section with some keybindings.
 
