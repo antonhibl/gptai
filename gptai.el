@@ -123,8 +123,8 @@ Argument GPTAI-PROMPT is the prompt to send to the API."
          (url-request-data
           (json-encode `(("model" . ,gptai-model)
                          ("prompt" . ,gptai-prompt)
-                         ("temperature" . gptai-temperature)
-                         ("max_tokens" . gptai-max-tokens))))
+                         ("temperature" . ,gptai-temperature)
+                         ("max_tokens" . ,gptai-max-tokens))))
          (buffer (url-retrieve-synchronously gptai-base-url nil 'silent))
          response)
 
